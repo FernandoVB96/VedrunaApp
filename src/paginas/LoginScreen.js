@@ -2,14 +2,12 @@
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { app } from '../../firebase-config'; // Importa la app ya inicializada
+import { app } from '../../firebase-config';
 
 export default function LoginScreen({ navigation }) {
   
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
-
-  // Usa la app que ya fue inicializada
   const auth = getAuth(app);
 
   const handleSingIn = () => {
@@ -28,7 +26,7 @@ export default function LoginScreen({ navigation }) {
       {/* Sección del Logo */}
       <View style={styles.logoSection}>
         <Image
-          source={require('../img/logoVedruna.png')} // Reemplaza con la ubicación correcta de tu imagen
+          source={require('../img/logoVedruna.png')}
           style={styles.logo}
         />
       </View>
@@ -83,35 +81,36 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#23272A',
     alignItems: 'center',
-    justifyContent: 'space-between', // Espacia el contenido entre el top y el bottom
-    paddingTop: 10, // Ajuste de padding superior
-    paddingBottom: 20, // Espacio en la parte inferior
+    justifyContent: 'space-between',
+    paddingTop: 10,
+    paddingBottom: 20,
   },
   logoSection: {
-    marginTop: 0, // Sin margen superior para que el logo esté en la parte superior
-    marginBottom: 20, // Espacio debajo del logo
+    marginTop: 0,
+    marginBottom: 20,
   },
   logo: {
-    width: 200, // Tamaño del logo
-    height: 200, // Tamaño del logo
+    width: 200,
+    height: 200,
     resizeMode: 'contain',
   },
   titleSection: {
-    marginBottom: 40, // Espacio debajo del título
+    marginBottom: 40,
     alignItems: 'center',
   },
   title: {
     color: '#DFDFDF',
-    fontSize: 40, // Tamaño de letra
+    fontSize: 40,
     fontWeight: 'bold',
   },
   formSection: {
     width: '80%',
-    marginBottom: 0, // Ajuste aún más el margen inferior para mover el formulario más hacia arriba
+    marginBottom: 0,
   },
   input: {
     backgroundColor: '#323639',
-    borderRadius: 10,  // Aquí se le da un borderRadius de 10
+    color: '#DFDFDF',
+    borderRadius: 10,
     padding: 10,
     marginBottom: 15,
     fontSize: 16,
@@ -125,11 +124,11 @@ const styles = StyleSheet.create({
   buttonSection: {
     width: '80%',
     alignItems: 'center',
-    marginBottom: 30, // Más espacio debajo del botón
+    marginBottom: 30,
   },
   loginButton: {
     backgroundColor: '#9FC63B',
-    borderRadius: 10, // Botón más redondeado
+    borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 20,
     alignItems: 'center',

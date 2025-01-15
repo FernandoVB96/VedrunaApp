@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, ScrollView,
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { app } from '../../firebase-config';
 
-export default function RegisterScreen({ navigation }) {
+export function RegisterScreen({ navigation }) {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [confirmPassword, setConfirmPassword] = React.useState('');

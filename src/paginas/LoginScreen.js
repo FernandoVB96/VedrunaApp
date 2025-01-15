@@ -4,7 +4,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'reac
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { app } from '../../firebase-config';
 
-export default function LoginScreen({ navigation }) {
+export function LoginScreen({ navigation }) {
   
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -14,7 +14,7 @@ export default function LoginScreen({ navigation }) {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         console.log('Sesión iniciada');
-        navigation.navigate('TabScreen');
+        navigation.navigate('TabNavegation');
       })
       .catch((error) => {
         console.log('Error al iniciar sesión:', error);

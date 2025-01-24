@@ -4,6 +4,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { AddScreen } from "./AddScreen.js"
 import { SettingScreen } from "./SettingScreen.js"
 import { HomeScreen } from "./HomeScreen.js"
+import { Image } from 'react-native';
+
 
 export function TabNavegation() {
   const Tab = createBottomTabNavigator();
@@ -27,25 +29,17 @@ export function TabNavegation() {
         }}
       />
       <Tab.Screen
-        name="Add"
-        component={AddScreen}
-
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings" color={color} size={size} />
-          ),
-        }}
+  name="Add"
+  component={AddScreen}
+  options={{
+    tabBarIcon: ({ color, size }) => (
+      <Image
+        source={require('../img/add.png')} // Replace with your image path
+        style={{ width: size, height: size }}
       />
-      <Tab.Screen
-        name="Ajustes"
-        component={SettingScreen}
-
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings" color={color} size={size} />
-          ),
-        }}
-      />
+    ),
+  }}
+/>
     </Tab.Navigator>
   );
 }

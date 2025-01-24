@@ -4,29 +4,65 @@ import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { app } from '../../firebase-config';
 
 export function RegisterScreen({ navigation }) {
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [confirmPassword, setConfirmPassword] = React.useState('');
+  const [form, setForm] = React.useState({
+    nick: '',
+    name: '',
+    lastName1: '',
+    lastName2: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
+
   const auth = getAuth(app);
 
-  const handleCreateAccount = () => {
-    console.log('Password:', password);
-    console.log('Confirm Password:', confirmPassword);
+  const handleInputChange = (field, value) => {
+    setForm({ ...form, [field]: value });
+  };
+
+  const handleCreateAccount = async () => {
+    const { email, password, confirmPassword, nick, name, lastName1, lastName2 } = form;
+
+    if (!email || !password || !nick || !name || !lastName1 || !lastName2 || !confirmPassword) {
+      Alert.alert('Error', 'Todos los campos son obligatorios');
+      return;
+    }
 
     if (password !== confirmPassword) {
       Alert.alert('Error', 'Las contraseñas no coinciden.');
       return;
     }
 
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        console.log('Cuenta creada');
-        navigation.navigate('Login');
-      })
-      .catch((error) => {
-        console.log('Error al crear cuenta:', error);
-        Alert.alert('Error', 'No se pudo crear la cuenta. Verifica los datos.');
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userId = userCredential.user.uid;
+
+      const usuarioData = {
+        nick,
+        user_id: userId,
+        nombre: name,
+        apellidos: `${lastName1} ${lastName2}`,
+      };
+
+      const response = await fetch('http://192.168.1.150:8080/proyecto01/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(usuarioData),
       });
+
+      if (response.ok) {
+        Alert.alert('Registro exitoso', 'Usuario creado correctamente en Firebase y MongoDB');
+        navigation.navigate('Login');
+      } else {
+        const errorData = await response.json();
+        Alert.alert('Error', errorData.message || 'Error al registrar el usuario en MongoDB');
+      }
+    } catch (error) {
+      console.error(error);
+      Alert.alert('Error', error.message || 'Error al registrar el usuario');
+    }
   };
 
   return (
@@ -42,31 +78,58 @@ export function RegisterScreen({ navigation }) {
         <Text style={styles.title}>Completar los siguientes campos:</Text>
 
         <TextInput
-          onChangeText={(text) => setEmail(text)}
+          onChangeText={(value) => handleInputChange('email', value)}
           style={styles.input}
           placeholder="Introduzca su correo"
           placeholderTextColor="#ccc"
           keyboardType="email-address"
           autoCapitalize="none"
+          value={form.email}
         />
         <TextInput
-          onChangeText={(text) => setPassword(text)}
+          onChangeText={(value) => handleInputChange('password', value)}
           style={styles.input}
           placeholder="Introduzca su contraseña"
           placeholderTextColor="#ccc"
           secureTextEntry={true}
+          value={form.password}
         />
         <TextInput
-          onChangeText={(text) => setConfirmPassword(text)}
+          onChangeText={(value) => handleInputChange('confirmPassword', value)}
           style={styles.input}
           placeholder="Repita su contraseña"
           placeholderTextColor="#ccc"
           secureTextEntry={true}
+          value={form.confirmPassword}
         />
-        <TextInput style={styles.input} placeholder="Introduzca su nick" placeholderTextColor="#ccc" />
-        <TextInput style={styles.input} placeholder="Introduzca su nombre" placeholderTextColor="#ccc" />
-        <TextInput style={styles.input} placeholder="Introduzca su primer apellido" placeholderTextColor="#ccc" />
-        <TextInput style={styles.input} placeholder="Introduzca su segundo apellido" placeholderTextColor="#ccc" />
+        <TextInput
+          onChangeText={(value) => handleInputChange('nick', value)}
+          style={styles.input}
+          placeholder="Introduzca su nick"
+          placeholderTextColor="#ccc"
+          value={form.nick}
+        />
+        <TextInput
+          onChangeText={(value) => handleInputChange('name', value)}
+          style={styles.input}
+          placeholder="Introduzca su nombre"
+          placeholderTextColor="#ccc"
+          value={form.name}
+        />
+        <TextInput
+          onChangeText={(value) => handleInputChange('lastName1', value)}
+          style={styles.input}
+          placeholder="Introduzca su primer apellido"
+          placeholderTextColor="#ccc"
+          value={form.lastName1}
+        />
+        <TextInput
+          onChangeText={(value) => handleInputChange('lastName2', value)}
+          style={styles.input}
+          placeholder="Introduzca su segundo apellido"
+          placeholderTextColor="#ccc"
+          value={form.lastName2}
+        />
 
         <TouchableOpacity
           style={styles.button}

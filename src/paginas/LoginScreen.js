@@ -42,7 +42,7 @@ export function LoginScreen({ navigation }) {
         <TextInput
           onChangeText={(text) => setEmail(text)}         
           style={styles.input}
-          placeholder="Introduzca su correo o nick..."
+          placeholder="Introduzca su correo..."
           placeholderTextColor="#868686"
         />
         <TextInput

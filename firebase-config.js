@@ -1,5 +1,6 @@
 // firebase-config.js
 import { initializeApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
 
 // Tu configuración de Firebase
 export const firebaseConfig = {
@@ -12,10 +13,10 @@ export const firebaseConfig = {
   measurementId: "G-4254S7Q565"
 };
 
-// Inicializa Firebase solo si aún no está inicializado
-let app;
-if (!app) {
-  app = initializeApp(firebaseConfig);
-}
+// Inicializa Firebase
+const app = initializeApp(firebaseConfig);
 
-export { app };
+// Configura y exporta el servicio de autenticación
+const auth = getAuth(app);
+
+export { app, auth };

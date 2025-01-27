@@ -67,7 +67,7 @@ export function AddScreen() {
     try {
       console.log("Subiendo imagen a Cloudinary...");
       const uploadResponse = await fetch(
-        `https://api.cloudinary.com/v1_1/dhjbacqmj/image/upload`,
+        `https://api.cloudinary.com/v1_1/dtrqdsqpq/image/upload`,
         {
           method: 'POST',
           body: formData,

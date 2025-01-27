@@ -11,17 +11,17 @@ export function HomeScreen() {
 
   const fetchUserNicknames = async (userIds) => {
     try {
-      const response = await fetch('http://192.168.1.150:8080/proyecto01/users/name');
+      const response = await fetch('http://172.26.1.201:8080/proyecto01/users/name');
       const usersData = await response.json();
-  
+
       const userNicknameMap = {};
       usersData.forEach(user => {
         if (userIds.includes(user.user_id)) {
           userNicknameMap[user.user_id] = user.nick;
         }
       });
-  
-      setUserNicknames(userNicknameMap)
+
+      setUserNicknames(userNicknameMap);
     } catch (error) {
       console.error('Error al obtener los nicknames de los usuarios:', error);
     }
@@ -29,21 +29,21 @@ export function HomeScreen() {
 
   const fetchPublicaciones = async () => {
     try {
-      const url = 'http://192.168.1.150:8080/proyecto01/publicaciones'; 
+      const url = 'http://172.26.1.201:8080/proyecto01/publicaciones';
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Error al obtener publicaciones');
       }
-  
+
       const data = await response.json();
-  
+
       const publicacionesConLikes = data.map(pub => ({
         ...pub,
         likes: pub.like ? pub.like.length : 0,
       }));
-  
+
       setPublicaciones(publicacionesConLikes);
-  
+
       const userIds = [...new Set(data.map((pub) => pub.user_id))];
       fetchUserNicknames(userIds);
     } catch (error) {
@@ -57,19 +57,19 @@ export function HomeScreen() {
     try {
       const pubIndex = publicaciones.findIndex(pub => pub.id === id);
       const updatedPublicaciones = [...publicaciones];
-  
+
       const currentLikes = updatedPublicaciones[pubIndex].like || [];
       if (currentLikes.includes(userId)) {
         updatedPublicaciones[pubIndex].like = currentLikes.filter(user => user !== userId);
       } else {
         updatedPublicaciones[pubIndex].like = [...currentLikes, userId];
       }
-  
+
       updatedPublicaciones[pubIndex].likes = updatedPublicaciones[pubIndex].like.length;
-  
+
       setPublicaciones(updatedPublicaciones);
-  
-      const url = `http://192.168.1.150:8080/proyecto01/publicaciones/put/${id}/${userId}`; 
+
+      const url = `http://172.26.1.201:8080/proyecto01/publicaciones/put/${id}/${userId}`;
       const response = await fetch(url, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -77,7 +77,7 @@ export function HomeScreen() {
           like: updatedPublicaciones[pubIndex].like,
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Error al actualizar el like');
       }
@@ -96,7 +96,6 @@ export function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Publicaciones</Text>
       {loading ? (
         <ActivityIndicator size="large" color="#ffffff" />
       ) : (
@@ -109,7 +108,10 @@ export function HomeScreen() {
             return (
               <View style={styles.card}>
                 <Text style={styles.userId}>
-                  {userNicknames[item.user_id] || 'Cargando...'}
+                  Publicado por{' '}
+                  <Text style={styles.nickname}>
+                    {userNicknames[item.user_id] || 'Cargando...'}
+                  </Text>
                 </Text>
                 <Text style={styles.title}>{item.titulo}</Text>
                 {item.image_url && (
@@ -134,7 +136,7 @@ export function HomeScreen() {
                       }
                     />
                   </TouchableOpacity>
-                  <Text style={styles.likeCount}>{item.likes || 0} Likes</Text>
+                  <Text style={styles.likeCount}>{item.likes || 0} Me gusta</Text>
                 </View>
               </View>
             );
@@ -150,8 +152,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#121212',
-    paddingTop: 20,
+    backgroundColor: '#23272A',
+    paddingTop: 30,
   },
   text: {
     color: '#ffffff',
@@ -163,16 +165,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   card: {
-    backgroundColor: '#1e1e1e',
-    borderRadius: 10,
-    padding: 10,
     marginBottom: 15,
     alignItems: 'center',
   },
   userId: {
     color: '#ffffff',
-    fontSize: 12,
+    fontSize: 16,
     marginBottom: 5,
+  },
+  nickname: {
+    fontWeight: 'bold',
   },
   title: {
     color: '#ffffff',
@@ -181,10 +183,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   image: {
-    width: 200,
+    width: 400,
     height: 200,
     marginBottom: 10,
-    borderRadius: 10,
   },
   description: {
     color: '#cccccc',

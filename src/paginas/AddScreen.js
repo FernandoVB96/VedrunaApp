@@ -164,7 +164,7 @@ export function AddScreen() {
           {photoUri ? (
             <Image source={{ uri: photoUri }} style={styles.image} />
           ) : (
-            <Image source={require('../img/camera.png')} style={styles.image} />
+            <Image source={require('../img/Contacts.png')} style={styles.image} />
           )}
         </TouchableOpacity>
 

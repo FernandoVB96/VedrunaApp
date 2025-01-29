@@ -9,6 +9,7 @@ export function HomeScreen() {
   const [userNicknames, setUserNicknames] = useState({});
   const userId = auth.currentUser.uid;
 
+  // Obtiene los nombres de usuario a partir de sus IDs
   const fetchUserNicknames = async (userIds) => {
     try {
       const response = await fetch('http://172.26.1.201:8080/proyecto01/users/name');
@@ -27,9 +28,12 @@ export function HomeScreen() {
     }
   };
 
+  // Obtiene las publicaciones desde la API y sus respectivos likes
   const fetchPublicaciones = async () => {
     try {
-      const url = 'http://172.26.1.201:8080/proyecto01/publicaciones';
+
+      const url = 'http://192.168.1.150:8080/proyecto01/publicaciones';
+
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Error al obtener publicaciones');
@@ -37,12 +41,20 @@ export function HomeScreen() {
 
       const data = await response.json();
 
+
+      // Agrega la cantidad de likes a cada publicación
+
+
       const publicacionesConLikes = data.map(pub => ({
         ...pub,
         likes: pub.like ? pub.like.length : 0,
       }));
 
       setPublicaciones(publicacionesConLikes);
+
+
+      // Obtiene una lista de IDs únicos de usuarios
+
 
       const userIds = [...new Set(data.map((pub) => pub.user_id))];
       fetchUserNicknames(userIds);
@@ -53,6 +65,7 @@ export function HomeScreen() {
     }
   };
 
+  // Maneja el evento de "me gusta" en una publicación
   const handleLike = async (id) => {
     try {
       const pubIndex = publicaciones.findIndex(pub => pub.id === id);
@@ -69,7 +82,9 @@ export function HomeScreen() {
 
       setPublicaciones(updatedPublicaciones);
 
-      const url = `http://172.26.1.201:8080/proyecto01/publicaciones/put/${id}/${userId}`;
+      const url = `http://192.168.1.150:8080/proyecto01/publicaciones/put/${id}/${userId}`;
+
+
       const response = await fetch(url, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -86,16 +101,21 @@ export function HomeScreen() {
     }
   };
 
+  // Carga las publicaciones al montar el componente y las actualiza cada 30 segundos
   useEffect(() => {
     fetchPublicaciones();
-
     const intervalId = setInterval(fetchPublicaciones, 30000);
-
     return () => clearInterval(intervalId);
   }, []);
 
   return (
     <View style={styles.container}>
+
+      <View style={styles.header}>
+        <Image source={require('../img/vedrunaLogo.png')} style={styles.logo} />
+        <Text style={styles.logoText}>VEDRUNA</Text>
+      </View>
+
       {loading ? (
         <ActivityIndicator size="large" color="#ffffff" />
       ) : (
@@ -107,26 +127,31 @@ export function HomeScreen() {
             const currentLikes = item.like || [];
             return (
               <View style={styles.card}>
-                <Text style={styles.userId}>
-                  Publicado por{' '}
-                  <Text style={styles.nickname}>
-                    {userNicknames[item.user_id] || 'Cargando...'}
-                  </Text>
-                </Text>
-                <Text style={styles.title}>{item.titulo}</Text>
-                {item.image_url && (
-                  <Image
-                    source={{ uri: item.image_url }}
-                    style={styles.image}
-                    onError={(e) => console.log('Error al cargar la imagen:', e.nativeEvent.error)}
-                  />
-                )}
-                <Text style={styles.description}>{item.comentario}</Text>
+
+                <View style={styles.imageContainerWithText}>
+                  <View style={styles.userContainer}>
+                    <View style={styles.userImageContainer}>
+                      <Image source={require('../img/avatar.png')} style={{ width: 60, height: 60 }} />
+                    </View>
+                    <View style={styles.userNameText}>
+                      <Text style={styles.userText}>Publicado por</Text>
+                      <Text style={styles.nickname}>{userNicknames[item.user_id] || 'Cargando...'}</Text>
+                    </View>
+                  </View>
+                  {item.image_url && (
+                    <Image
+                      source={{ uri: item.image_url }}
+                      style={styles.image}
+                      onError={(e) => console.log('Error al cargar la imagen:', e.nativeEvent.error)}
+                    />
+                  )}
+                </View>
+
                 <View style={styles.likeContainer}>
                   <TouchableOpacity onPress={() => handleLike(item.id)}>
                     <Icon
                       name={currentLikes.includes(userId) ? 'heart' : 'heart-o'}
-                      size={30}
+                      size={25}
                       color={
                         currentLikes.includes(userId)
                           ? item.user_id === userId
@@ -138,6 +163,8 @@ export function HomeScreen() {
                   </TouchableOpacity>
                   <Text style={styles.likeCount}>{item.likes || 0} Me gusta</Text>
                 </View>
+                <Text style={styles.title}>{item.titulo}</Text>
+                <Text style={styles.description}>{item.comentario}</Text>
               </View>
             );
           }}
@@ -153,7 +180,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#23272A',
-    paddingTop: 30,
+
+    paddingTop: 50,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  logo: {
+    width: 71,
+    height: 71,
+  },
+  logoText: {
+    fontSize: 55,
+    color: '#ffffff',
+    fontWeight: 'bold',
+    marginLeft: 10,
+
+
   },
   text: {
     color: '#ffffff',
@@ -164,41 +209,67 @@ const styles = StyleSheet.create({
   imageContainer: {
     alignItems: 'center',
   },
+  imageContainerWithText: {
+    position: 'relative',
+    width: '100%',
+    alignItems: 'center',
+  },
+  userContainer: {
+    flexDirection: 'row',
+    position: 'absolute',
+    top: 10,
+    left: 20,
+    zIndex: 1,
+  },
+  userNameText: {
+    padding: 5,
+  },
+  image: {
+    width: 360,
+    height: 350,
+  },
   card: {
     marginBottom: 15,
     alignItems: 'center',
   },
-  userId: {
+  userText: {
     color: '#ffffff',
-    fontSize: 16,
-    marginBottom: 5,
+
+    fontSize: 15,
+    marginBottom: 2,
+    marginLeft: 10,
   },
   nickname: {
     fontWeight: 'bold',
+    color: '#ffffff',
+    fontSize: 20,
+    marginLeft: 10,
   },
   title: {
-    color: '#ffffff',
-    fontSize: 16,
+    color: '#9FC63B',
+    fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 10,
-  },
-  image: {
-    width: 400,
-    height: 200,
-    marginBottom: 10,
+    alignSelf: 'flex-start',
+    marginLeft: 20,
+
   },
   description: {
     color: '#cccccc',
-    fontSize: 14,
+    fontSize: 18,
+    alignSelf: 'flex-start',
+    marginLeft: 20,
   },
   likeContainer: {
     flexDirection: 'row',
+    alignSelf: 'flex-start',
     alignItems: 'center',
     marginTop: 10,
+    marginLeft: 20,
   },
   likeCount: {
     color: '#ffffff',
     marginLeft: 10,
-    fontSize: 14,
+    fontSize: 13,
   },
 });

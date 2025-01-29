@@ -9,6 +9,7 @@ export function HomeScreen() {
   const [userNicknames, setUserNicknames] = useState({});
   const userId = auth.currentUser.uid;
 
+  // Obtiene los nombres de usuario a partir de sus IDs
   const fetchUserNicknames = async (userIds) => {
     try {
       const response = await fetch('http://192.168.1.150:8080/proyecto01/users/name');
@@ -27,6 +28,7 @@ export function HomeScreen() {
     }
   };
 
+  // Obtiene las publicaciones desde la API y sus respectivos likes
   const fetchPublicaciones = async () => {
     try {
       const url = 'http://192.168.1.150:8080/proyecto01/publicaciones';
@@ -37,6 +39,7 @@ export function HomeScreen() {
 
       const data = await response.json();
 
+      // Agrega la cantidad de likes a cada publicación
       const publicacionesConLikes = data.map(pub => ({
         ...pub,
         likes: pub.like ? pub.like.length : 0,
@@ -44,6 +47,7 @@ export function HomeScreen() {
 
       setPublicaciones(publicacionesConLikes);
 
+      // Obtiene una lista de IDs únicos de usuarios
       const userIds = [...new Set(data.map((pub) => pub.user_id))];
       fetchUserNicknames(userIds);
     } catch (error) {
@@ -53,6 +57,7 @@ export function HomeScreen() {
     }
   };
 
+  // Maneja el evento de "me gusta" en una publicación
   const handleLike = async (id) => {
     try {
       const pubIndex = publicaciones.findIndex(pub => pub.id === id);
@@ -69,7 +74,7 @@ export function HomeScreen() {
 
       setPublicaciones(updatedPublicaciones);
 
-      const url = 'http://192.168.1.150:8080/proyecto01/publicaciones/put/${id}/${userId}';
+      const url = `http://192.168.1.150:8080/proyecto01/publicaciones/put/${id}/${userId}`;
       const response = await fetch(url, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -86,22 +91,17 @@ export function HomeScreen() {
     }
   };
 
+  // Carga las publicaciones al montar el componente y las actualiza cada 30 segundos
   useEffect(() => {
     fetchPublicaciones();
-
     const intervalId = setInterval(fetchPublicaciones, 30000);
-
     return () => clearInterval(intervalId);
   }, []);
 
   return (
     <View style={styles.container}>
-      {/* Logo and Name Section */}
       <View style={styles.header}>
-        <Image
-          source={require('../img/vedrunaLogo.png')}
-          style={styles.logo}
-        />
+        <Image source={require('../img/vedrunaLogo.png')} style={styles.logo} />
         <Text style={styles.logoText}>VEDRUNA</Text>
       </View>
 
@@ -119,10 +119,7 @@ export function HomeScreen() {
                 <View style={styles.imageContainerWithText}>
                   <View style={styles.userContainer}>
                     <View style={styles.userImageContainer}>
-                        <Image
-                            source={require('../img/avatar.png')}
-                            style={{ width: 60, height: 60 }}>
-                        </Image>
+                      <Image source={require('../img/avatar.png')} style={{ width: 60, height: 60 }} />
                     </View>
                     <View style={styles.userNameText}>
                       <Text style={styles.userText}>Publicado por</Text>
@@ -210,11 +207,10 @@ const styles = StyleSheet.create({
   },
   userNameText: {
     padding: 5,
-    borderRadius: 5,
   },
   image: {
-    width: 400,
-    height: 200,
+    width: 360,
+    height: 350,
   },
   card: {
     marginBottom: 15,

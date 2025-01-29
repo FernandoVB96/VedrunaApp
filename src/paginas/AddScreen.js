@@ -11,7 +11,7 @@ export function AddScreen() {
   const [apiEndpoint] = useState('http://192.168.1.150:8080/proyecto01/publicaciones');
   const [currentUserId, setCurrentUserId] = useState(null);
 
-
+  // Verifica el estado de autenticación del usuario
   useEffect(() => {
     const authListener = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -24,6 +24,7 @@ export function AddScreen() {
     return () => authListener();
   }, []);
 
+  // Captura una foto utilizando la cámara del dispositivo
   const capturePhoto = async () => {
     const permissionResponse = await ImagePicker.requestCameraPermissionsAsync();
     if (!permissionResponse.granted) {
@@ -51,6 +52,7 @@ export function AddScreen() {
     }
   };
 
+  // Sube una imagen a Cloudinary y devuelve la URL de la imagen subida
   const uploadImageToCloudinary = async (uri) => {
     const formData = new FormData();
     const fileName = uri.split('/').pop();
@@ -90,7 +92,7 @@ export function AddScreen() {
     }
   };
 
-  // Handle the post creation process
+  // Maneja la creación de una publicación con imagen, título y descripción
   const submitPost = async () => {
     if (!photoUri || !postTitle || !postDescription) {
       Alert.alert("Error", "Por favor, completa todos los campos y toma una foto");

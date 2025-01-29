@@ -12,7 +12,7 @@ export function HomeScreen() {
   // Obtiene los nombres de usuario a partir de sus IDs
   const fetchUserNicknames = async (userIds) => {
     try {
-      const response = await fetch('http://192.168.1.150:8080/proyecto01/users/name');
+      const response = await fetch('http://172.26.1.201:8080/proyecto01/users/name');
       const usersData = await response.json();
 
       const userNicknameMap = {};
@@ -31,7 +31,9 @@ export function HomeScreen() {
   // Obtiene las publicaciones desde la API y sus respectivos likes
   const fetchPublicaciones = async () => {
     try {
+
       const url = 'http://192.168.1.150:8080/proyecto01/publicaciones';
+
       const response = await fetch(url);
       if (!response.ok) {
         throw new Error('Error al obtener publicaciones');
@@ -39,7 +41,10 @@ export function HomeScreen() {
 
       const data = await response.json();
 
+
       // Agrega la cantidad de likes a cada publicación
+
+
       const publicacionesConLikes = data.map(pub => ({
         ...pub,
         likes: pub.like ? pub.like.length : 0,
@@ -47,7 +52,10 @@ export function HomeScreen() {
 
       setPublicaciones(publicacionesConLikes);
 
+
       // Obtiene una lista de IDs únicos de usuarios
+
+
       const userIds = [...new Set(data.map((pub) => pub.user_id))];
       fetchUserNicknames(userIds);
     } catch (error) {
@@ -75,6 +83,8 @@ export function HomeScreen() {
       setPublicaciones(updatedPublicaciones);
 
       const url = `http://192.168.1.150:8080/proyecto01/publicaciones/put/${id}/${userId}`;
+
+
       const response = await fetch(url, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -100,6 +110,7 @@ export function HomeScreen() {
 
   return (
     <View style={styles.container}>
+
       <View style={styles.header}>
         <Image source={require('../img/vedrunaLogo.png')} style={styles.logo} />
         <Text style={styles.logoText}>VEDRUNA</Text>
@@ -116,6 +127,7 @@ export function HomeScreen() {
             const currentLikes = item.like || [];
             return (
               <View style={styles.card}>
+
                 <View style={styles.imageContainerWithText}>
                   <View style={styles.userContainer}>
                     <View style={styles.userImageContainer}>
@@ -134,6 +146,7 @@ export function HomeScreen() {
                     />
                   )}
                 </View>
+
                 <View style={styles.likeContainer}>
                   <TouchableOpacity onPress={() => handleLike(item.id)}>
                     <Icon
@@ -167,6 +180,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#23272A',
+
     paddingTop: 50,
   },
   header: {
@@ -183,6 +197,8 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: 'bold',
     marginLeft: 10,
+
+
   },
   text: {
     color: '#ffffff',
@@ -218,6 +234,7 @@ const styles = StyleSheet.create({
   },
   userText: {
     color: '#ffffff',
+
     fontSize: 15,
     marginBottom: 2,
     marginLeft: 10,
@@ -235,6 +252,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     alignSelf: 'flex-start',
     marginLeft: 20,
+
   },
   description: {
     color: '#cccccc',
